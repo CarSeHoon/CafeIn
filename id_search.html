@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script src="manage.js"></script>
+	<link rel="stylesheet" href="css/manage.css">
+    <title>아이디/비밀번호 찾기</title>
+  </head>
+  <body>
+  <header>
+	<?php include "view/header.html";?>
+  </header>
+	<div id="page-wrapper">
+		<form method="post" action="id_find.html">
+		<h2> 아이디/비밀번호 찾기 </h2>
+		<div class="form-group">
+			<label for="cafe_name">아이디 찾기</label>
+			<input type="text" class="form-control" id="cafe_name" name="user_name" placeholder="이름을 입력해주세요."><br>
+			<input type="text" class="form-control" id="cafe_name" name="user_email" placeholder="이메일을 입력해주세요.">
+			<button type="submit" class="btn btn-primary btn-lg btn-block">찾기</button>
+		</div>
+		</form>
+
+		<div style="height:50px;"></div>
+
+		<form method="post" action="pass_find.html">
+		<div class="form-group">
+			<label for="cafe_name">비밀번호 찾기</label>
+			<input type="text" class="form-control" id="cafe_name" name="user_id" placeholder="아이디를 입력해주세요."><br>
+			<input type="text" class="form-control" id="cafe_name" name="user_name" placeholder="이름을 입력해주세요."><br>
+			<input type="text" class="form-control" id="cafe_name" name="user_email" placeholder="이메일을 입력해주세요.">
+			<button type="submit" class="btn btn-primary btn-lg btn-block">찾기</button>
+		</div>
+		</form>
+	
+	<footer>
+		<?php include "view/footer.html";?>
+	</footer>
+	
+
+	
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+<?php
+session_start();
+include "../config/db.php";
+
+$c_idx = $_POST['c_idx'];
+$reply_c_idx = $_GET['reply_c_idx'];
+
+$sql = "delete from cafe_reply where reply_c_idx = ".$reply_c_idx;
+$result = mysqli_query($con, $sql);
+
+
+?>
+<script>
+alert('댓글이 삭제하였습니다.');
+history.back();
+</script>

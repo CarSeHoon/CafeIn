@@ -1,0 +1,150 @@
+   <?php
+	session_start();
+?>
+	
+	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <a class="navbar-brand" href="/CafeIn/">CafeIn</a>
+			<form class="form-inline" action="cafe_search.html" action="post">
+				<input class="form-control mr-sm-2" type="search" placeholder="카페 또는 지역" name="searchstring" required>
+				<button type="submit" class="btn btn-primary mb-2">검색</button>
+			</form>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="/CafeIn/">홈 <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="cafesearch.html">카페검색</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="cafemap.html">내 주변 카페</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="manage.html">카페 등록</a>
+                </li>
+				<?php
+				if($_SESSION["name"]) {
+				?>
+				<li class="nav-item">
+                  <a class="nav-link" href="join_edit.html">회원 정보 수정</a>
+				<?php
+					} 
+				?>
+                </li>
+
+
+               <!--  <li class="nav-item">
+                  <a data-toggle="modal" data-target="#exampleModal" class="nav-link" href="#">카카오 로그인</a>
+                </li>-->
+				<?php
+				if($_SESSION["name"]) {
+				?>
+				<a href="/CafeIn/logout.html" class="nav-link">로그아웃</a>
+				<?php
+				} else { ?>
+				<a data-toggle="modal" data-target="#bm_login_Modal" class="nav-link" href="#">로그인/회원가입</a>
+				<?php } ?>
+				</li>
+              </ul>
+            </div>
+    </nav>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="height: 500px; margin-top: 100px;">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="margin-left: 190px; font-size: 30px;"><strong>로그인</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" style="text-align: center; margin-top: 100px;">
+        <h5>로그인하면 가고싶은 카페를</h5>
+        <h5>저장할 수 있어요!</h5>
+      </div>
+
+      <div class="modal_footer" style="text-align: center; margin-bottom: 100px;">
+        <p>
+    <a href="#0" id="kakaoLogin"><img src="img/kakao_login.png" alt="카카오계정 로그인" style="width: 300px; height: 60px;"/></a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 사업자 로그인 Modal -->
+<div class="modal fade" id="bm_login_Modal" data-backdrop="static" data-keyboard="false" tabindex="-1" 
+						aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bm_login_ModalLabel">CafeIn</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align:left;">
+        <h5 style="font-size:20px;">로그인</h5>
+			<form method="post" action="/CafeIn/login_ok.html">
+		<div class="modal_login_box">
+			 <label for="bm_loginInput_id" class="badge badge-primary" style="width:30px; height:20px; text-align:center;" >ID</label><br>
+			    <input type="text" class="form-control" style="border: gray 2px solid;" name="user_id" placeholder="아이디를 입력하세요" required
+					class="input">
+					<br>
+			<label for="bm_loginInput_pass" class="badge badge-primary" style="width:37px; height:20px;" >PASS</label><br>
+			<input type="password" class="form-control"  style="border: gray 2px solid;" name="user_pass" placeholder="비밀번호를 입력하세요" required
+					class="input">
+			<div style="padding:15px 0px 10px;">
+			<button type="submit" value ="로그인"class="btn btn-primary">로그인</button></div>
+			<p><a href="id_search.html">아이디 / 비밀번호 찾기</a><span>
+	</div>
+	</form>
+    </div>
+    <div class="modal-footer">
+	    <a href="view/join.html" button type="button" class="btn btn-primary">회원가입</a>
+	    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+ <!-- 카카오로그인 -->
+ <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+ <script>
+     function saveToDos(token) { //item을 localStorage에 저장합니다. 
+         typeof(Storage) !== 'undefined' && sessionStorage.setItem('AccessKEY', JSON.stringify(token)); 
+     };
+ 
+     window.Kakao.init('9261accf59c24b4db950ad9cc71db8e6');
+     
+     function kakaoLogin() {
+         window.Kakao.Auth.login({
+             scope: 'profile_nickname, account_email', //동의항목 페이지에 있는 개인정보 보호 테이블의 활성화된 ID값을 넣습니다.
+             success: function(response) {
+                 saveToDos(response.access_token)  // 로그인 성공하면 사용자 엑세스 토큰 sessionStorage에 저장
+                 window.Kakao.API.request({ // 사용자 정보 가져오기 
+                     url: '/v2/user/me',
+                     success: (res) => {
+                         const kakao_account = res.kakao_account;
+                         alert('로그인 성공');
+                         window.location.href='/ex/kakao_login.html'
+                     }
+                 });
+             },
+             fail: function(error) {
+                 console.log(error);
+             }
+         });
+     };
+ 
+     const login = document.querySelector('#kakaoLogin');
+     login.addEventListener('click', kakaoLogin);
+ </script>

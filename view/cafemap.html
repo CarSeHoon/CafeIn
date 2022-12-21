@@ -1,0 +1,273 @@
+<?php
+	include "../config/db.php";
+	$sql = "select * from manage order by c_idx";
+	$result = mysqli_query($con,$sql);
+?>
+<!doctype html>
+<html lang="ko">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/cafemap.css">
+    <title>CafeIn</title>
+    <script src="../includeHTML.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sly/1.6.1/sly.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <?php include "header.html";?>
+        </header>
+
+        <div class="view-content">
+            <div class="map-top">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="false">
+                      반경
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+					  <button class="dropdown-item" type="button" onclick="removeCircle()">초기화</button>
+                      <button class="dropdown-item" type="button" onclick="getSCircleBtn()">500m</button>
+                      <button class="dropdown-item" type="button" onclick="getMCircleBtn()">1km</button>
+                      <button class="dropdown-item" type="button" onclick="getLCircleBtn()">3km</button>
+                    </div>
+					<button class="btn btn-secondary" type="button" onclick="getCurrentPosBtn()">내위치</button>
+                </div>
+			</div>
+			<div class="map-body">
+				<div id="map" style="width:100%;height:350px;">
+			</div>
+        </div>
+            <div class="map-bot">
+                <div class="frame">
+                    <ul class="slide">
+						<?php
+							while($row = mysqli_fetch_array($result)){
+						?>
+							<li><div style="background-image: url(../img/<?php echo $row['c_thumbnail']?>); background-size: 330px 150px;"><?php echo $row['c_name']?></div></li>
+						<?php
+							}
+						?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 가로슬라이드 -->
+        <script>
+            var on = $('.slide').index();
+            var options = {
+                horizontal: 1,
+                itemNav: 'centered',
+                speed: 300,
+                smart: 1,
+                activateOn: 'click',
+                mouseDragging: 1,
+                touchDragging: 1,
+                activateMiddle: 1,
+                releaseSwing: 1,
+                startAt: on
+			};
+             var frame = new Sly('.frame', options).init();
+        </script>
+
+		<!-- 카카오지도 API 로딩 스크립트 -->
+		 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1401da001d45149d418eeb3031c249d4&libraries=services,clusterer,drawing"></script>
+
+		<!-- 카카오지도 띄우는 코드작성 -->
+		<script>
+			var mapContainer = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+			var mapOption = { //지도를 생성할 때 필요한 기본 옵션
+				center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+				level: 6 //지도의 레벨(확대, 축소 정도)
+				};
+			var map = new kakao.maps.Map(mapContainer, mapOption); //지도 생성 및 객체 리턴
+			
+			//위치 권한 허용
+			function locationLoadSuccess(pos){
+				// 현재 위치 받아오기
+				var currentPos = new kakao.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+
+				// 지도 이동(기존 위치와 가깝다면 부드럽게 이동)
+				map.panTo(currentPos);
+
+				var imageSrc = "../img/usermarker.png",
+					imageSize = new kakao.maps.Size(34,39);
+
+				var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+				// 마커 생성
+				var marker = new kakao.maps.Marker({
+					map: map,
+					position: currentPos,
+					image: markerImage
+				});
+
+			};
+		
+			//위치 권한 차단
+			function locationLoadError(pos){
+				alert('위치 정보를 가져오는데 실패했습니다.');
+			};
+
+			// 위치 가져오기 버튼 클릭시
+			function getCurrentPosBtn(){
+				navigator.geolocation.getCurrentPosition(locationLoadSuccess,locationLoadError);
+			};	
+
+			//원 반경
+			var circle;
+			
+			// 500m
+			function setSCircle(pos){
+				// 현재 위치 받아오기
+				var currentPos = new kakao.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+
+				if (circle) { // 최초 실행시에는 circle이 없을테니 예외처리를 해줍니다.
+					circle.setMap(null); //이전에 설정한 반경 제거.
+				}
+
+				var radius = 500;
+
+				circle = new kakao.maps.Circle({
+					center : currentPos,
+					radius: radius,
+					strokeWeight: 2,
+					strokeColor: 'brown',
+					strokeOpacity: 0.8,
+					strokeStyle: 'solid',
+					fillColor: '#D3D5BF',
+					fillOpacity: 0.4
+				});
+
+				circle.setMap(map);
+			};
+
+			function getSCircleBtn(){
+				navigator.geolocation.getCurrentPosition(setSCircle);
+			};
+
+			// 1km
+			function setMCircle(pos){
+				// 현재 위치 받아오기
+				var currentPos = new kakao.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+
+				if (circle) { // 최초 실행시에는 circle이 없을테니 예외처리를 해줍니다.
+					circle.setMap(null); //이전에 설정한 반경 제거.
+				}
+
+				var radius = 1000;
+
+				circle = new kakao.maps.Circle({
+					center: currentPos,
+					radius: radius,
+					strokeWeight: 2,
+					strokeColor: 'brown',
+					strokeOpacity: 0.8,
+					strokeStyle: 'solid',
+					fillColor: '#D3D5BF',
+					fillOpacity: 0.4
+				});
+
+				circle.setMap(map);
+
+			};
+
+			function getMCircleBtn(){
+				navigator.geolocation.getCurrentPosition(setMCircle);
+			};
+
+			// 3km
+			function setLCircle(pos){
+				// 현재 위치 받아오기
+				var currentPos = new kakao.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+
+				if (circle) { // 최초 실행시에는 circle이 없을테니 예외처리를 해줍니다.
+					circle.setMap(null); //이전에 설정한 반경 제거.
+				}
+				
+				var radius = 3000;
+
+				circle = new kakao.maps.Circle({
+					center : currentPos,
+					radius: radius,
+					strokeWeight: 2,
+					strokeColor: 'brown',
+					strokeOpacity: 0.8,
+					strokeStyle: 'solid',
+					fillColor: '#D3D5BF',
+					fillOpacity: 0.4
+				});
+
+				circle.setMap(map);
+
+				//마커들이 담긴 배열
+				markers.forEach(function(m){
+					var c1 = currentPos;
+					var c2 = m.getPosition();
+					var poly = new Polyline({
+						path:[c1,c2]
+					});
+
+					var dist = poly.getLength();
+
+					if(dist < radius){
+						m.setMarkers(map);
+					} else {
+						m.setMarkers(null);
+					}
+
+				});
+
+			};
+
+			function getLCircleBtn(){
+				navigator.geolocation.getCurrentPosition(setLCircle);
+			};
+
+			//반경 제거
+			function removeCircle(){
+				circle.setMap(null);
+			};
+
+			// 지도에 표시된 마커 객체를 가지고 있을 배열입니다
+			var markers = [];
+
+			// 마커를 생성하는 함수입니다
+			function addMarker(position) {
+				
+				// 마커를 생성합니다
+				var marker = new kakao.maps.Marker({
+					position: position
+				});
+				
+				// 생성된 마커를 배열에 추가합니다
+				markers.push(marker);
+			}
+
+			// 마커 하나를 지도위에 표시합니다 
+			addMarker(new kakao.maps.LatLng(35.913586946316244, 128.80285325893837));
+
+
+			// 배열에 추가된 마커들을 지도에 표시하거나 삭제하는 함수입니다
+			function setMarkers(map) {
+
+				for (var i = 0; i < markers.length; i++) {
+					markers[i].setMap(map);
+				}	
+
+			}
+			
+		</script>
+
+
+		
+		<!-- 부트스트랩 -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+        
+    </body>
+</html>

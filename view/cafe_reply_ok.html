@@ -1,0 +1,18 @@
+<?php
+	session_start();
+	include "../config/db.php";
+
+	$c_idx = $_POST['c_idx'];
+	$reply_c_id = $_POST['reply_c_id'];
+	$reply_c_name = $_POST['reply_c_name'];
+	$reply_c_memo = $_POST['reply_c_memo'];
+	$reply_c_wdate = date("Y-m-d H:i:s");
+
+	$sql = "insert into cafe_reply(c_idx,reply_c_id,reply_c_name,reply_c_memo,reply_c_wdate) values 
+	(".$c_idx.",'".$reply_c_id."','".$reply_c_name."','".$reply_c_memo."','".$reply_c_wdate."')";
+
+	$result = mysqli_query($con,$sql);
+
+	echo "<script> alert('댓글을 작성하였습니다');location.href='cafeinfo.html?c_idx=$c_idx';</script>";
+
+?>
